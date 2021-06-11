@@ -14,6 +14,8 @@ jobs:
     name: Build SAR
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # full-clone, needed for commit messages
       - uses: hpi-swa/setup-smalltalkCI@v1
         id: smalltalkci
         with:
@@ -28,7 +30,6 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Generate Release Notes
         run: |
-          git fetch --all
           LAST_VERSION=$(git tag --list --sort=-version:refname "v*" | head -2 | tail -1)
           echo "Comparing $LAST_VERSION to $RELEASE_VERSION"
           git log $LAST_VERSION..$RELEASE_VERSION --pretty=format:'- %s' | tee ${{ github.workspace }}-CHANGELOG.txt
